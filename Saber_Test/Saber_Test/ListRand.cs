@@ -17,6 +17,8 @@ namespace Saber_Test
             Count = 0;
         }
 
+        #region List_Filling
+
         public void AddAfterTail(ListNode node)
         {
             if (Head == null)
@@ -48,7 +50,7 @@ namespace Saber_Test
         }
 
         public void SetRands()
-        { 
+        {
             var node = Head;
 
             while (node != null)
@@ -70,34 +72,28 @@ namespace Saber_Test
             return result;
         }
 
-        public void Print()
-        {
-            var node = Head;
+        #endregion List_Filling
 
-            while (node != null)
-            {
-                Console.WriteLine($"Node data = [{node.Data}] ; Node rand data = [{node.Rand.Data}]");
-                node = node.Next;
-            }
-        }
+
+
+        #region Serialize
 
         public void Serialize(FileStream fileStream)
         {
-            var streamWriter = new StreamWriter(fileStream); // default .NET stream;
-
-            var randomIndexesByCurrentNode = ConvertToDictionaryWithIndexes(); // default .NET dictionary
+            var randIndexesByCurrentNode = ConvertToDictionaryWithIndexes(); // default .NET dictionary
 
             var node = Head;
 
             while (node != null)
             {
-                var str = $"Data = {node.Data} ; Rand = {randomIndexesByCurrentNode[node.Rand]}";
-                streamWriter.WriteLine(str);
+                var randIndex = randIndexesByCurrentNode[node.Rand];
+                var str = $"Data = {node.Data} ; Rand = {randIndex} ; {Environment.NewLine}";
+                var bytes = Encoding.Default.GetBytes(str);
+                fileStream.Write(bytes);
                 node = node.Next;
             }
 
-            randomIndexesByCurrentNode.Clear();
-            streamWriter.Close();
+            randIndexesByCurrentNode.Clear();
         }
 
         private Dictionary<ListNode, int> ConvertToDictionaryWithIndexes()
@@ -116,11 +112,101 @@ namespace Saber_Test
             return result;
         }
 
+        #endregion Serialize
+
+
+
+        #region Deserialize
+
         public void Deserialize(FileStream fileStream)
         {
-            StreamReader reader = new StreamReader(fileStream);
+            StreamReader reader = new StreamReader(fileStream); // default .NET stream
+
+            List<ListNode> nodes = new List<ListNode>(); // default .NET lists
+            List<int> nodeRands = new List<int>();
+
+            // filling list with nodes from stream;
+            while (!reader.EndOfStream)
+            {
+                var nodeData = reader.ReadLine(); // reading line from file stream
+                var deserializeLineResult = DeserializeLine(nodeData, out var node, out var randIndex); // deserializing node and rand index from line
+
+                if (!deserializeLineResult)
+                {
+                    Console.WriteLine($"ERROR!");
+                    continue;
+                }
+
+                nodes.Add(node);
+                nodeRands.Add(randIndex);
+
+                AddAfterTail(node);
+            }
+
             reader.Close();
+
+            // set rands
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                var currentNode = nodes[i];
+                var randIndex = nodeRands[i];
+                var randNode = nodes[randIndex];
+                currentNode.Rand = randNode;
+            }
+
+            nodes.Clear();
+            nodeRands.Clear();
         }
+
+        private bool DeserializeLine(string line, out ListNode node, out int randIndex)
+        {
+            node = null;
+            randIndex = int.MinValue;
+
+            try
+            {
+                var lineSplit = line.Split(" ; ");
+
+                var nodeDataString = lineSplit[0];
+                var nodeDataSplit = nodeDataString.Split(" = ");
+                var nodeData = nodeDataSplit[1];
+
+                var randIndexString = lineSplit[1];
+                var randIndexSplit = randIndexString.Split(" = ");
+                randIndex = int.Parse(randIndexSplit[1]);
+
+                node = new ListNode();
+                node.Data = nodeData;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("ERROR!");
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+                return false;
+            }
+
+            return true;
+        }
+
+        #endregion Deserialize
+
+
+
+        #region Debug
+
+        public void Print()
+        {
+            var node = Head;
+
+            while (node != null)
+            {
+                Console.WriteLine($"Node data = [{node.Data}] ; Node rand data = [{node.Rand.Data}]");
+                node = node.Next;
+            }
+        }
+
+        #endregion Debug
     }
 
     internal class ListNode
