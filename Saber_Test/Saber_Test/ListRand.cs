@@ -39,23 +39,35 @@ namespace Saber_Test
         {
             Head = node;
             Head.Prev = null;
-            //node.Rand = null;
         }
 
         private void SetTail(ListNode node)
         {
             Tail = node;
             Tail.Next = null;
-            //Tail.Rand = null;
         }
 
-        private void SetRand(ListNode node)
-        {
+        public void SetRands()
+        { 
+            var node = Head;
+
+            while (node != null)
+            {
+                var rand = GetRand();
+                node.Rand = rand;
+                node = node.Next;
+            }
         }
 
         private ListNode GetRand()
         {
-            return null;
+            var nodeIndex = Random.Shared.Next(Count);
+            var result = Head;
+
+            for (int i = 0; i < nodeIndex; i++)
+                result = result.Next;
+
+            return result;
         }
 
         public void Print()
@@ -64,13 +76,14 @@ namespace Saber_Test
 
             while (node != null)
             {
-                Console.WriteLine(node.Data);
+                Console.WriteLine($"Node data = [{node.Data}] ; Node rand data = [{node.Rand.Data}]");
                 node = node.Next;
             }
         }
 
         public void Serialize(FileStream fileStream)
         {
+            
         }
 
         public void Deserialize(FileStream fileStream)
