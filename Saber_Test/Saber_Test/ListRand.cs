@@ -78,6 +78,7 @@ namespace Saber_Test
 
         #region Serialize
 
+        // serializing, O(n)
         public void Serialize(FileStream fileStream)
         {
             var randIndexesByCurrentNode = ConvertToDictionaryWithIndexes(); // default .NET dictionary
@@ -96,6 +97,7 @@ namespace Saber_Test
             randIndexesByCurrentNode.Clear();
         }
 
+        // making dictionary<node, nodeIndex>, O(n)
         private Dictionary<ListNode, int> ConvertToDictionaryWithIndexes()
         {
             var node = Head;
@@ -118,6 +120,7 @@ namespace Saber_Test
 
         #region Deserialize
 
+        // deserializing, O(n)
         public void Deserialize(FileStream fileStream)
         {
             StreamReader reader = new StreamReader(fileStream); // default .NET stream
@@ -125,7 +128,7 @@ namespace Saber_Test
             List<ListNode> nodes = new List<ListNode>(); // default .NET lists
             List<int> nodeRands = new List<int>();
 
-            // filling list with nodes from stream;
+            // filling list with nodes from stream, O(n)
             while (!reader.EndOfStream)
             {
                 var nodeData = reader.ReadLine(); // reading line from file stream
@@ -143,9 +146,9 @@ namespace Saber_Test
                 AddAfterTail(node);
             }
 
-            reader.Close();
+            reader.Close(); // closing stream
 
-            // set rands
+            // set rands, O(n)
             for (int i = 0; i < nodes.Count; i++)
             {
                 var currentNode = nodes[i];
