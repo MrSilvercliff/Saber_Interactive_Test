@@ -83,11 +83,43 @@ namespace Saber_Test
 
         public void Serialize(FileStream fileStream)
         {
-            
+            var streamWriter = new StreamWriter(fileStream); // default .NET stream;
+
+            var randomIndexesByCurrentNode = ConvertToDictionaryWithIndexes(); // default .NET dictionary
+
+            var node = Head;
+
+            while (node != null)
+            {
+                var str = $"Data = {node.Data} ; Rand = {randomIndexesByCurrentNode[node.Rand]}";
+                streamWriter.WriteLine(str);
+                node = node.Next;
+            }
+
+            randomIndexesByCurrentNode.Clear();
+            streamWriter.Close();
+        }
+
+        private Dictionary<ListNode, int> ConvertToDictionaryWithIndexes()
+        {
+            var node = Head;
+            var index = 0;
+            var result = new Dictionary<ListNode, int>();
+
+            while (node != null)
+            {
+                result[node] = index;
+                index++;
+                node = node.Next;
+            }
+
+            return result;
         }
 
         public void Deserialize(FileStream fileStream)
         {
+            StreamReader reader = new StreamReader(fileStream);
+            reader.Close();
         }
     }
 
@@ -104,11 +136,6 @@ namespace Saber_Test
             Next = null;
             Rand = null;
             Data = string.Empty;
-        }
-
-        public void SetData(string data)
-        {
-            Data = data;
         }
     }
 }

@@ -36,7 +36,7 @@ namespace Saber_Test
                 var data = GenerateListNodeData(builder);
 
                 var node = new ListNode();
-                node.SetData(data);
+                node.Data = data;
                 listRand.AddAfterTail(node);
             }
         }
