@@ -15,11 +15,15 @@ namespace Saber_Test
             FillList(_listRandSerialize);
             _listRandSerialize.SetRands();
 
+            Console.WriteLine($"List to serialize:");
             _listRandSerialize.Print();
             Console.WriteLine();
 
             TestSerialize();
             TestDeserialize();
+
+            Console.WriteLine("Deserialized list:");
+            _listRandDeserialize.Print();
         }
 
         private static void FillList(ListRand listRand)
@@ -58,7 +62,6 @@ namespace Saber_Test
             try
             {
                 fileStream = new FileStream("ListRandData.dat", FileMode.OpenOrCreate, FileAccess.Write);
-                Console.WriteLine(fileStream.Name);
                 _listRandSerialize.Serialize(fileStream);
             }
             catch (Exception ex)
@@ -76,8 +79,7 @@ namespace Saber_Test
 
             try
             {
-                fileStream = new FileStream("ListRandData.dat", FileMode.OpenOrCreate, FileAccess.Write);
-                Console.WriteLine(fileStream.Name);
+                fileStream = new FileStream("ListRandData.dat", FileMode.Open, FileAccess.Read);
                 _listRandDeserialize.Deserialize(fileStream);
             }
             catch (Exception ex)
