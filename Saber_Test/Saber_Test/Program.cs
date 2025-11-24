@@ -28,7 +28,7 @@ namespace Saber_Test
 
         private static void FillList(ListRand listRand)
         {
-            var count = Random.Shared.Next(10, 16);
+            var count = Random.Shared.Next(4, 8);
             var builder = new StringBuilder();
 
             for (int i = 0; i < count; i++)
@@ -61,11 +61,19 @@ namespace Saber_Test
 
             try
             {
-                fileStream = new FileStream("ListRandData.dat", FileMode.OpenOrCreate, FileAccess.Write);
+                if (File.Exists("./ListRandData.dat"))
+                    fileStream = new FileStream("ListRandData.dat", FileMode.Truncate, FileAccess.Write); // rewrite file if exist
+                else
+                    fileStream = new FileStream("ListRandData.dat", FileMode.Create, FileAccess.Write); // create new file if doesn't exist
+
                 _listRandSerialize.Serialize(fileStream);
             }
             catch (Exception ex)
             {
+                Console.WriteLine("ERROR!");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+                fileStream?.Close();
             }
             finally
             {
@@ -84,6 +92,10 @@ namespace Saber_Test
             }
             catch (Exception ex)
             {
+                Console.WriteLine("ERROR!");
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+                fileStream?.Close();
             }
             finally
             {
