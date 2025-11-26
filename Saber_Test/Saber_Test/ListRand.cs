@@ -81,24 +81,25 @@ namespace Saber_Test
         // serializing, O(n)
         public void Serialize(FileStream fileStream)
         {
-            var randIndexesByCurrentNode = ConvertToDictionaryWithIndexes(); // default .NET dictionary
+            var streamWriter = new StreamWriter(fileStream); // default .NET stream
+            var randIndexesByCurrentNode = GetDictionaryWithIndexes(); // default .NET dictionary
 
             var node = Head;
 
             while (node != null)
             {
                 var randIndex = randIndexesByCurrentNode[node.Rand];
-                var str = $"Data = {node.Data} ; Rand = {randIndex} ; {Environment.NewLine}";
-                var bytes = Encoding.Default.GetBytes(str);
-                fileStream.Write(bytes);
+                var str = $"Data = {node.Data} ; Rand = {randIndex}";
+                streamWriter.WriteLine(str);
                 node = node.Next;
             }
 
+            streamWriter.Close();
             randIndexesByCurrentNode.Clear();
         }
 
         // making dictionary<node, nodeIndex>, O(n)
-        private Dictionary<ListNode, int> ConvertToDictionaryWithIndexes()
+        private Dictionary<ListNode, int> GetDictionaryWithIndexes()
         {
             var node = Head;
             var index = 0;
@@ -168,7 +169,7 @@ namespace Saber_Test
 
             try
             {
-                var lineSplit = line.Split(" ; ");
+                var lineSplit = line.Split(" ; "); // O(n)
 
                 var nodeDataString = lineSplit[0];
                 var nodeDataSplit = nodeDataString.Split(" = ");
